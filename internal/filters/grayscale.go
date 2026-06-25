@@ -1,11 +1,14 @@
-package processor
+package filters
 
 import (
 	"image"
 	"image/color"
 )
 
-func GrayScale(img image.Image) *image.RGBA {
+type Grayscale struct {
+}
+
+func (g Grayscale) Process(img image.Image) image.Image {
 	bound := img.Bounds()
 	dst := image.NewRGBA(bound)
 

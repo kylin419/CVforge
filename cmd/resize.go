@@ -9,15 +9,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var grayscaleCmd = &cobra.Command{
-	Use:  "grayscale input output",
+var resizeWidth, resizeHeight int
+
+var resizeCmd = &cobra.Command{
+	Use:  "resize input output",
 	Args: cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input := args[0]
-		output := args[1]
-		pipe := pipeline.New(filters.Grayscale{})
+		pipe := pipeline.New(filters.Resize{Width: resizeWidth, Height: resizeHeight})
 		app := service.NewImageProcessor(pipe)
-		err := app.Process(input, output)
+		err := app.Process(args[0], args[1])
 		if err != nil {
 			return err
 		}
@@ -27,5 +27,17 @@ var grayscaleCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(grayscaleCmd)
+	rootCmd.AddCommand(resizeCmd)
+	resizeCmd.Flags().IntVar(
+		&resizeWidth,
+		"w",
+		800,
+		"resize width",
+	)
+	resizeCmd.Flags().IntVar(
+		&resizeHeight,
+		"h",
+		600,
+		"resize height",
+	)
 }

@@ -9,15 +9,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var grayscaleCmd = &cobra.Command{
-	Use:  "grayscale input output",
+var rotateAngle float64
+var rotateCmd = &cobra.Command{
+	Use:  "rotate input output",
 	Args: cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		input := args[0]
-		output := args[1]
-		pipe := pipeline.New(filters.Grayscale{})
+		pipe := pipeline.New(filters.Rotate{Angle: rotateAngle})
 		app := service.NewImageProcessor(pipe)
-		err := app.Process(input, output)
+		err := app.Process(args[0], args[1])
 		if err != nil {
 			return err
 		}
@@ -27,5 +26,6 @@ var grayscaleCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(grayscaleCmd)
+	rootCmd.AddCommand(rotateCmd)
+	rotateCmd.Flags().Float64Var(&rotateAngle, "angle", 90, "Rotate angle")
 }

@@ -1,19 +1,18 @@
 package service
 
 import (
-	"github.com/kylin419/CVforge/internal/filters"
 	"github.com/kylin419/CVforge/internal/imageio"
 	"github.com/kylin419/CVforge/internal/pipeline"
+	"github.com/kylin419/CVforge/internal/progress"
 )
 
 type ImageProcessor struct {
 	pipeline pipeline.Pipeline
 }
 
-func NewImageProcessor() ImageProcessor {
-	pipe := pipeline.New(filters.Grayscale{})
+func NewImageProcessor(p pipeline.Pipeline) ImageProcessor {
 	return ImageProcessor{
-		pipeline: pipe,
+		pipeline: p,
 	}
 }
 
@@ -22,7 +21,8 @@ func (p ImageProcessor) Process(input, output string) error {
 	if err != nil {
 		return err
 	}
-	result := p.pipeline.Run(img)
+	bar := &progress.Bar{}
+	result := p.pipeline.Run(img, bar)
 	err = imageio.Save(output, result)
 	return err
 }

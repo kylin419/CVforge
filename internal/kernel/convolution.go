@@ -42,3 +42,48 @@ func Apply(img image.Image, k Kernel) image.Image {
 	}
 	return dst
 }
+
+func ApplyRaw(img *image.Gray, k Kernel) [][]float64 {
+	if !k.Valid() {
+		return nil
+	}
+	bound := img.Bounds()
+	kw := k.Width()
+	kh := k.Height()
+
+	offsetX := kw / 2
+	offsetY := kh / 2
+
+	result := make([][]float64, bound.Dy())
+	for i := range result {
+		result[i] = make([]float64, bound.Dx())
+	}
+	for y := bound.Min.Y; y < bound.Max.Y; y++ {
+
+		for x := bound.Min.X; x < bound.Max.X; x++ {
+			var sum float64
+			for ky := 0; ky < kh; ky++ {
+
+				for kx := 0; kx < kw; kx++ {
+					nx := x + kx - offsetX
+					ny := y + ky - offsetY
+					if nx < bound.Min.X ||
+						nx >= bound.Max.X ||
+						ny < bound.Min.Y ||
+						ny >= bound.Max.Y {
+						continue
+					}
+					pixel := img.GrayAt(nx, ny).Y
+					weight := k.Data[ky][kx]
+					sum += float64(pixel) * weight
+
+				}
+
+			}
+			sum = Normalize(sum, k.Factor, k.Bias)
+			result[y-bound.Min.Y][x-bound.Min.X] = sum
+		}
+
+	}
+	return result
+}

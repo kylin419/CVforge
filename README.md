@@ -1,112 +1,388 @@
 <div align="center">
+
 <img src="assets/cvforge.png" alt="CVForge" width="200">
-<h1>CVForge</h1>
+
+# CVForge
+
+**A lightweight Computer Vision CLI toolkit written in Go**
+
+A modular image processing framework featuring classic computer vision algorithms implemented from scratch in pure Go.
 
 <p>
-A lightweight Computer Vision CLI toolkit written in Go.
+<img src="https://img.shields.io/badge/Go-1.22+-00ADD8?style=for-the-badge&logo=go">
+<img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge">
 </p>
-
-<a href="https://go.dev/">
-  <img src="https://img.shields.io/badge/go-1.22+-blue.svg?style=for-the-badge&logo=go" alt="Go Version">
-</a>
-
-<a href="LICENSE">
-  <img src="https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge" alt="License">
-</a>
 
 </div>
 
+---
+
+## Overview
+
+**CVForge** is a lightweight Computer Vision command-line toolkit implemented entirely in **Go**.
+
+Unlike wrappers around OpenCV, CVForge focuses on implementing classical image processing algorithms from scratch while maintaining a clean, modular architecture.
+
+It is designed for both practical image processing and educational purposes.
 
 ---
 
-**CVForge** 是一個以 Go 開發的輕量級 Computer Vision CLI 工具。
+# Features
 
-透過模組化 Filter Pipeline 架構，讓使用者可以快速組合影像處理流程，
-從基礎影像轉換到進階電腦視覺演算法皆可擴充。
+## Geometry
+
+- Resize
+- Rotate
+- Crop
+
+## Color Processing
+
+- Grayscale
+- Histogram Equalization
+
+## Blur
+
+- Box Blur
+- Gaussian Blur
+- Median Blur
+
+## Image Enhancement
+
+- Sharpen
+- Emboss
+
+## Edge Detection
+
+- Sobel Edge Detection
+
+## Thresholding
+
+- Binary
+- Binary Inverse
+- Truncate
+- To Zero
+- To Zero Inverse
 
 ---
 
-## 核心特色
+# Example Results
 
-* **Modular Filter Pipeline**
+## Original
 
-  每個影像處理功能皆為獨立 Filter，可自由組合：
+| Original |
+|----------|
+| ![](examples/cvforge.png) |
+
+---
+
+## Basic Filters
+
+| Grayscale | Gaussian | Median |
+|-----------|----------|--------|
+| ![](examples/grayscale.png) | ![](examples/gaussian_5x5.png) | ![](examples/median.png) |
+
+---
+
+## Image Enhancement
+
+| Sharpen | Emboss | Equalize |
+|----------|---------|-----------|
+| ![](examples/sharpen.png) | ![](examples/emboss.png) | ![](examples/equalize.png) |
+
+---
+
+## Edge Detection
+
+| Sobel |
+|--------|
+| ![](examples/sobel.png) |
+
+---
+
+## Threshold
+
+| Binary | Binary Inv |
+|---------|------------|
+| ![](examples/threshold_bin.png) | ![](examples/threshold_bin_inv.png) |
+
+| Truncate | To Zero | To Zero Inv |
+|-----------|----------|-------------|
+| ![](examples/threshold_truncate.png) | ![](examples/threshold_zero.png) | ![](examples/threshold_zero_inv.png) |
+
+---
+
+# Architecture
+
+CVForge adopts a modular filter pipeline architecture.
+
+Each image processing operation is implemented as an independent filter.
 
 ```text
-Input Image
-     |
-     v
-+-----------+
-| Grayscale |
-+-----------+
-     |
-     v
-+-----------+
-|   Blur    |
-+-----------+
-     |
-     v
-+-----------+
-|  Resize   |
-+-----------+
-     |
-     v
-Output Image
+             +-------------+
+Input Image ->| Load Image |
+             +-------------+
+                    │
+                    ▼
+           +-----------------+
+           | Filter Pipeline |
+           +-----------------+
+              │      │
+              │      ├── Grayscale
+              │      ├── Gaussian
+              │      ├── Sobel
+              │      ├── Threshold
+              │      └── ...
+                    ▼
+             +-------------+
+             | Save Image  |
+             +-------------+
 ```
-## 已支援功能
-| Feature   | Command     | Description        |
-| --------- | ----------- | ------------------ |
-| Grayscale | `grayscale` | RGB 轉灰階            |
-| Blur      | `blur`      | Gaussian-like Blur |
-| Resize    | `resize`    | 調整影像尺寸             |
-| Rotate    | `rotate`    | 旋轉影像               |
-| Crop      | `crop`      | 裁切影像               |
 
-## 快速開始
-### 安裝
-#### Clone repository:
-```aiignore
+Every filter implements the same interface:
+
+```go
+type Filter interface {
+    Process(
+        image.Image,
+        progress.Reporter,
+    ) image.Image
+}
+```
+
+---
+
+# Project Structure
+
+```text
+CVForge
+├── assets/
+├── cmd/
+│   ├── blur.go
+│   ├── crop.go
+│   ├── gaussian.go
+│   ├── grayscale.go
+│   ├── median.go
+│   ├── resize.go
+│   ├── rotate.go
+│   ├── sharpen.go
+│   ├── emboss.go
+│   ├── sobel.go
+│   ├── threshold.go
+│   └── equalize.go
+│
+├── internal/
+│   ├── filters/
+│   ├── histogram/
+│   ├── imageio/
+│   ├── imageutil/
+│   ├── kernel/
+│   ├── pipeline/
+│   ├── progress/
+│   └── service/
+│
+├── examples/
+└── main.go
+```
+
+---
+
+# Supported Commands
+
+| Command | Description |
+|----------|-------------|
+| `grayscale` | Convert image to grayscale |
+| `blur` | Box blur |
+| `gaussian` | Gaussian blur |
+| `median` | Median blur |
+| `resize` | Resize image |
+| `rotate` | Rotate image |
+| `crop` | Crop image |
+| `sharpen` | Sharpen image |
+| `emboss` | Emboss effect |
+| `sobel` | Sobel edge detection |
+| `threshold` | Binary thresholding |
+| `equalize` | Histogram equalization |
+
+---
+
+# Installation
+
+Clone the repository
+
+```bash
 git clone https://github.com/kylin419/CVforge.git
 cd CVforge
 ```
-#### Build:
-```aiignore
-go build .
+
+Build
+
+```bash
+go build
 ```
-### 使用方式
-#### GrayScale
-```aiignore
+
+---
+
+# Usage
+
+### Grayscale
+
+```bash
 cvforge grayscale input.jpg output.jpg
 ```
-#### Resize
-```aiignore
-cvforge resize \
-input.jpg \
-output.jpg \
---w WIDTH \
---h  HEIGHT
-```
-#### Rotate
-```aiignore
-cvforge rotate \
-input.jpg \
-output.jpg \
---angle ANGLE
+
+### Gaussian Blur
+
+```bash
+cvforge gaussian input.jpg output.jpg \
+    --size 5 \
+    --sigma 1.5
 ```
 
-#### Crop
-```aiignore
-cvforge crop \
-input.jpg \
-output.jpg \
---x X \
---y Y \
---w W \
---h H
+### Median Blur
+
+```bash
+cvforge median input.jpg output.jpg \
+    --radius 2
 ```
 
-## License
-### MIT License
+### Resize
 
-## Author
-### Kylin
+```bash
+cvforge resize input.jpg output.jpg \
+    --w 800 \
+    --h 600
+```
+
+### Rotate
+
+```bash
+cvforge rotate input.jpg output.jpg \
+    --angle 90
+```
+
+### Crop
+
+```bash
+cvforge crop input.jpg output.jpg \
+    --x 100 \
+    --y 50 \
+    --w 400 \
+    --h 300
+```
+
+### Threshold
+
+```bash
+cvforge threshold input.jpg output.jpg \
+    --value 127 \
+    --type binary
+```
+
+Available threshold types:
+
+- binary
+- binary-inv
+- truncate
+- tozero
+- tozero-inv
+
+### Histogram Equalization
+
+```bash
+cvforge equalize input.jpg output.jpg
+```
+
+---
+
+# Algorithms
+
+## Filtering
+
+- Box Blur
+- Gaussian Blur
+- Median Blur
+
+## Convolution
+
+- Generic Convolution Engine
+- Dynamic Gaussian Kernel
+- Preset Kernels
+
+## Enhancement
+
+- Sharpen
+- Emboss
+- Histogram Equalization
+
+## Edge Detection
+
+- Sobel Operator
+
+## Thresholding
+
+- Binary
+- Binary Inverse
+- Truncate
+- To Zero
+- To Zero Inverse
+
+---
+
+# Design Goals
+
+- Pure Go implementation
+- No OpenCV dependency
+- Modular filter pipeline
+- Easy to extend
+- Educational implementation of classical computer vision algorithms
+
+---
+
+# Roadmap
+
+## v1.3 ✅
+
+- [x] Geometry Transformations
+- [x] Grayscale
+- [x] Generic Convolution Engine
+- [x] Gaussian Blur
+- [x] Median Blur
+- [x] Sharpen
+- [x] Emboss
+- [x] Sobel Edge Detection
+- [x] Histogram Equalization
+- [x] Threshold Family
+
+## v1.4
+
+- [ ] Morphological Operations
+  - [ ] Erosion
+  - [ ] Dilation
+  - [ ] Opening
+  - [ ] Closing
+
+## v1.5
+
+- [ ] Canny Edge Detection
+- [ ] Histogram Visualization
+- [ ] CLAHE
+
+## v2.0
+
+- [ ] Harris Corner Detection
+- [ ] Hough Transform
+- [ ] Template Matching
+
+---
+
+# License
+
+MIT License
+
+---
+
+# Author
+
+**Kylin**
+
+GitHub: https://github.com/kylin419

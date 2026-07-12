@@ -1,6 +1,7 @@
 package kernel
 
 type Kernel struct {
+	Name   string
 	Data   [][]float64
 	Factor float64
 	Bias   float64

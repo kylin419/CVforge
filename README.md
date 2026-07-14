@@ -63,6 +63,13 @@ It is designed for both practical image processing and educational purposes.
 - To Zero
 - To Zero Inverse
 
+## Morphology
+
+- Erosion
+- Dilation
+- Opening
+- Closing
+
 ---
 
 # Example Results
@@ -109,6 +116,19 @@ It is designed for both practical image processing and educational purposes.
 |-----------|----------|-------------|
 | ![](examples/threshold_truncate.png) | ![](examples/threshold_zero.png) | ![](examples/threshold_zero_inv.png) |
 
+
+---
+
+## Morphology
+
+### Structuring Element Comparison
+
+| Operation | Square | Cross |
+|-----------|--------|-------|
+| **Erosion** | ![](examples/erosion_square.png) | ![](examples/erosion_cross.png) |
+| **Dilation** | ![](examples/dilation_square.png) | ![](examples/dilation_cross.png) |
+| **Opening** | ![](examples/opening_square.png) | ![](examples/opening_cross.png) |
+| **Closing** | ![](examples/closing_square.png) | ![](examples/closing_cross.png) |
 ---
 
 # Architecture
@@ -159,16 +179,19 @@ CVForge
 ├── cmd/
 │   ├── blur.go
 │   ├── crop.go
+│   ├── dilation.go
+│   ├── emboss.go
+│   ├── equalize.go
+│   ├── erosion.go
 │   ├── gaussian.go
 │   ├── grayscale.go
 │   ├── median.go
+│   ├── opening.go
+│   ├── closing.go
 │   ├── resize.go
 │   ├── rotate.go
-│   ├── sharpen.go
-│   ├── emboss.go
 │   ├── sobel.go
-│   ├── threshold.go
-│   └── equalize.go
+│   └── threshold.go
 │
 ├── internal/
 │   ├── filters/
@@ -176,6 +199,7 @@ CVForge
 │   ├── imageio/
 │   ├── imageutil/
 │   ├── kernel/
+│   ├── morphology/
 │   ├── pipeline/
 │   ├── progress/
 │   └── service/
@@ -202,7 +226,10 @@ CVForge
 | `sobel` | Sobel edge detection |
 | `threshold` | Binary thresholding |
 | `equalize` | Histogram equalization |
-
+| `erosion` | Morphological erosion |
+| `dilation` | Morphological dilation |
+| `opening` | Morphological opening |
+| `closing` | Morphological closing |
 ---
 
 # Installation
@@ -292,6 +319,39 @@ Available threshold types:
 cvforge equalize input.jpg output.jpg
 ```
 
+### Erosion
+
+```bash
+cvforge erosion input.png output.png \
+    --element square
+```
+
+### Dilation
+
+```bash
+cvforge dilation input.png output.png \
+    --element square
+```
+
+### Opening
+
+```bash
+cvforge opening input.png output.png \
+    --element square
+```
+
+### Closing
+
+```bash
+cvforge closing input.png output.png \
+    --element square
+```
+
+Supported structuring elements:
+
+- square
+- cross
+
 ---
 
 # Algorithms
@@ -326,6 +386,14 @@ cvforge equalize input.jpg output.jpg
 - To Zero
 - To Zero Inverse
 
+## Morphology
+
+- Binary Erosion
+- Binary Dilation
+- Opening
+- Closing
+- Configurable Structuring Elements
+
 ---
 
 # Design Goals
@@ -333,8 +401,18 @@ cvforge equalize input.jpg output.jpg
 - Pure Go implementation
 - No OpenCV dependency
 - Modular filter pipeline
+- Reusable convolution engine
+- Reusable morphology engine
 - Easy to extend
 - Educational implementation of classical computer vision algorithms
+
+---
+# Performance
+
+- Pure Go implementation
+- Streaming image processing pipeline
+- Progress reporting for long-running operations
+- No external computer vision libraries
 
 ---
 
@@ -353,13 +431,13 @@ cvforge equalize input.jpg output.jpg
 - [x] Histogram Equalization
 - [x] Threshold Family
 
-## v1.4
+## v1.4 ✅
 
-- [ ] Morphological Operations
-  - [ ] Erosion
-  - [ ] Dilation
-  - [ ] Opening
-  - [ ] Closing
+- [x] Morphological Operations
+  - [x] Erosion
+  - [x] Dilation
+  - [x] Opening
+  - [x] Closing
 
 ## v1.5
 
